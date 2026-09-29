@@ -1,25 +1,25 @@
-# 🌡️ ESP32 IoT Monitor & Control System
+# ESP32 IoT Monitor & Control System
 
 A simple ESP32-based IoT project that monitors **temperature using an LM35 sensor** and provides remote control of a **light and buzzer** through a **Blynk dashboard**.
 
-The ESP32 connects to Wi-Fi and sends the temperature to Blynk while allowing the user to control the light and buzzer remotely.
+The ESP32 connects to Wi-Fi, sends live temperature data to Blynk, and receives commands from the dashboard to control the connected devices.
 
 ---
 
-## ✨ Features
+## Features
 
-- 🌡️ Real-time temperature monitoring using **LM35**
-- 📱 Blynk dashboard for monitoring and control
-- 💡 Remote light ON/OFF control
-- 🔔 Remote buzzer ON/OFF control
-- 📲 Blynk notifications for temperature alerts
-- 📶 Wi-Fi connectivity through ESP32
-- 🖥️ Temperature output through Serial Monitor
-- 🔴 ESP32 status LED indication while connecting to Wi-Fi
+- Real-time temperature monitoring using **LM35**
+- Blynk dashboard for monitoring and control
+- Remote **Light ON/OFF** control
+- Remote **Buzzer ON/OFF** control
+- Temperature-based **Blynk notifications**
+- Wi-Fi connectivity
+- Temperature display through **Serial Monitor**
+- Wi-Fi connection status using ESP32 LED
 
 ---
 
-## 🧰 Components Required
+## Components Required
 
 | Component | Quantity |
 |---|---:|
@@ -27,329 +27,234 @@ The ESP32 connects to Wi-Fi and sends the temperature to Blynk while allowing th
 | LM35 Temperature Sensor | 1 |
 | LED / Light | 1 |
 | Buzzer | 1 |
-| Jumper Wires | As required |
 | Breadboard | 1 |
+| Jumper Wires | As required |
 
 ---
 
-## 🔌 Connections
+## Connections
 
-### 🌡️ LM35 → ESP32
-
-The LM35 has **3 pins**:
+### LM35 → ESP32
 
 | LM35 Pin | ESP32 |
 |---|---|
-| **VCC** | **3.3V** |
-| **GND** | **GND** |
-| **VOUT** | **GPIO 36 (VP)** |
+| VCC | 3.3V |
+| VOUT | GPIO 36 (VP) |
+| GND | GND |
 
-> ⚠️ Check the orientation of your LM35 before connecting it. With the flat/front side facing you, the usual pin order is **VCC → VOUT → GND**. Check your specific LM35 module/datasheet if yours is packaged differently.
+> Check the pin orientation of your LM35 before connecting it.
+
+### Light / LED → ESP32
+
+| Light / LED | ESP32 |
+|---|---|
+| Positive (+) | GPIO 13 |
+| Negative (-) | GND |
+
+The light is controlled using **Blynk Virtual Pin V1**.
+
+### Buzzer → ESP32
+
+| Buzzer | ESP32 |
+|---|---|
+| Positive (+) | GPIO 17 |
+| Negative (-) | GND |
+
+The buzzer is controlled using **Blynk Virtual Pin V2**.
+
+### Pin Summary
+
+| Function | ESP32 Pin |
+|---|---|
+| LM35 Temperature | GPIO 36 |
+| Light / LED | GPIO 13 |
+| Buzzer | GPIO 17 |
+| Wi-Fi Status LED | GPIO 2 |
+
 ---
 
-💡 Light / LED → ESP32
-Light/LED Connection	ESP32
-Positive (+)	GPIO 13
-Negative (-)	GND
+## Blynk Dashboard
 
-The light is controlled from Blynk using Virtual Pin V1.
+The project uses **Blynk IoT** for remote monitoring and device control.
 
-🔔 Buzzer → ESP32
-Buzzer Connection	ESP32
-Positive (+)	GPIO 17
-Negative (-)	GND
+### Virtual Pins
 
-The buzzer is controlled from Blynk using Virtual Pin V2.
+| Virtual Pin | Purpose | Direction |
+|---|---|---|
+| V0 | Temperature | ESP32 → Blynk |
+| V1 | Light Control | Blynk → ESP32 |
+| V2 | Buzzer Control | Blynk → ESP32 |
+
+### Dashboard Widgets
+
+| Widget | Virtual Pin | Purpose |
+|---|---|---|
+| Temperature Display / Gauge | V0 | Display temperature |
+| Switch | V1 | Control light |
+| Switch | V2 | Control buzzer |
 
 ---
 
-🔴 ESP32 Status LED
+## Notifications
 
-The program uses:
-
-pinMode(2, OUTPUT);
-
-GPIO 2 is used as a Wi-Fi connection status indicator.
-
-While the ESP32 is trying to connect to Wi-Fi:
-
-LED → ON/OFF → ON/OFF → ON/OFF
-
-After Wi-Fi connection:
-
-LED → ON
-📌 Pin Mapping
-Function	ESP32 Pin	Direction
-LM35 Temperature	GPIO 36	INPUT
-Light / LED	GPIO 13	OUTPUT
-Buzzer	GPIO 17	OUTPUT
-Wi-Fi Status LED	GPIO 2	OUTPUT
----
-
-📱 Blynk Dashboard
-The project uses Blynk IoT for remote monitoring and control.
-
-Virtual Pins
-Virtual Pin	Purpose	Direction
-V0	Temperature	ESP32 → Blynk
-V1	Light Control	Blynk → ESP32
-V2	Buzzer Control	Blynk → ESP32
-Dashboard
-
-The Blynk dashboard can contain:
-
-🌡️ Temperature display connected to V0
-💡 Light switch connected to V1
-🔔 Buzzer switch connected to V2
-
-Example:
-
-┌─────────────────────────────┐
-│       ESP32 IoT Monitor     │
-├─────────────────────────────┤
-│                             │
-│ 🌡️ Temperature: 28.5 °C     │
-│                             │
-│ 💡 Light       [ ON / OFF ] │
-│                             │
-│ 🔔 Buzzer      [ ON / OFF ] │
-│                             │
-└─────────────────────────────┘
-📲 Notifications
-
-Temperature alerts can be configured through Blynk Events.
+Temperature alerts can be configured using **Blynk Events**.
 
 For example:
 
 Temperature > 35°C
-        ↓
-Blynk Event Triggered
-        ↓
-📲 Notification sent
+→ Blynk Event
+→ Push Notification
 
-The current Arduino code sends the temperature to V0. The actual notification threshold/event is configured inside the Blynk dashboard/console.
+The Arduino code continuously sends the temperature to V0. The temperature threshold and notification settings are configured separately in the Blynk Console.
 
-Example notification:
+## Libraries Used
 
-⚠️ High Temperature Alert!
-Temperature has exceeded the safe threshold.
-🔄 How the System Works
-             🌡️ LM35
-                │
-                │ Temperature
-                ▼
-          ┌─────────────┐
-          │    ESP32    │
-          └──────┬──────┘
-                 │
-        ┌────────┴─────────┐
-        │                  │
-        ▼                  ▼
-     📶 Wi-Fi          💡 Light
-        │
-        ▼
-     ☁️ Blynk
-        │
-   ┌────┴─────┐
-   │          │
-   ▼          ▼
- 💡 Light   🔔 Buzzer
- Control    Control
-
-Temperature flow:
-
-LM35
-  ↓
-ESP32 GPIO 36
-  ↓
-Temperature calculated
-  ↓
-Blynk V0
-  ↓
-📱 Dashboard
-  ↓
-📲 Alert if configured threshold is exceeded
----
-
-📚 Libraries Used
+### WiFi.h	Connects ESP32 to Wi-Fi
+### BlynkSimpleEsp32.h	Connects ESP32 to Blynk
+### ESP_LM35.h	Reads temperature from LM35
+Include in Code
+```cpp
 #include <WiFi.h>
 #include <BlynkSimpleEsp32.h>
 #include <ESP_LM35.h>
-Libraries
-WiFi.h → Connects ESP32 to Wi-Fi
-BlynkSimpleEsp32.h → Connects ESP32 with Blynk
-ESP_LM35.h → Reads temperature from the LM35 sensor
----
-
-⚙️ Blynk Configuration
-Create a Blynk template and configure:
-
-Template
+Blynk Configuration
+```
+### 1. Create Template
+Create a Blynk template with:
 Template Name: ESP32IOT
-Datastreams
-V0 → Temperature
-V1 → Light
-V2 → Buzzer
-Dashboard Widgets
+
+### 2. Create Datastreams
+Datastream	Data
+V0	Temperature
+V1	Light
+V2	Buzzer
+
+### 3. Add Dashboard Widgets
 V0 → Temperature Display / Gauge
 V1 → Switch
 V2 → Switch
 
-For notifications, create a Blynk Event with the required temperature condition and enable push notifications.
+### 4. Configure Notifications
+Create a Blynk Event for the required temperature condition and enable push notifications.
 
----
+## Arduino IDE Setup
+### 1. Install ESP32 Board Support
+Add the ESP32 board package URL under:
+Additional Boards Manager URLs & install the ESP32 board package.
+Select ESP32 Dev Module
 
-💻 Arduino IDE Setup
-1. Install ESP32 Board Support
+### 2. Select ESP32 Port
+Connect the ESP32 through USB and select COM5 
 
-In Arduino IDE:
-
-File
- → Preferences
- → Additional Boards Manager URLs
-
-Add the ESP32 board package URL if it is not already installed.
-
-Then:
-
-Tools
- → Board
- → Boards Manager
- → Search: ESP32
- → Install
-
-Select:
-
-ESP32 Dev Module
-2. Select the ESP32 Port
-
-Connect the ESP32 through USB and select:
-
-Tools
- → Port
- → COM5
-
-3. Install Required Libraries
-
+### 3. Install Required Libraries
 ESP_LM35
-WiFi (included with the ESP32 board package)
-BlynkSimpleEsp32 (Blynk library)
+Blynk
+WiFi.h is included with the ESP32 board package.
 
-🔐 Wi-Fi & Blynk Credentials
+## Wi-Fi & Blynk Credentials
+Add your credentials in the Arduino code:
 
-The code requires:
-
+```cpp
 #define BLYNK_TEMPLATE_ID "YOUR_TEMPLATE_ID"
 #define BLYNK_TEMPLATE_NAME "YOUR_TEMPLATE_NAME"
 #define BLYNK_AUTH_TOKEN "YOUR_BLYNK_AUTH_TOKEN"
 
 char ssid[] = "YOUR_WIFI_NAME";
 char pass[] = "YOUR_WIFI_PASSWORD";
+```
 
-Do not upload your real Wi-Fi password or Blynk authentication token to GitHub.
-
-For a public repository, replace them with placeholders or store them separately in a file such as:
-
-secrets.h
-
-and add that file to .gitignore.
-
-If a real Blynk token/password has already been exposed publicly, rotate the credentials before publishing the project.
-
-🧠 Code Logic
-Temperature
-
+Code Logic
+Temperature Monitoring
 The LM35 is connected to GPIO 36:
-
+```cpp
 ESP_LM35 temp(36);
-
+```
 The temperature is read using:
-
+```cpp
 t = temp.tempC();
-
-Then it is printed to the Serial Monitor:
-
+```
+It is displayed on the Serial Monitor:
+```cpp
 Serial.print("Temperature-C:");
 Serial.println(t);
-
-and sent to Blynk:
-
+```
+and sent to Blynk through V0:
+```cpp
 Blynk.virtualWrite(V0, t);
-💡 Light Control
-
+```
+### Light Control
 Blynk V1 controls GPIO 13:
-
+```cpp
 BLYNK_WRITE(V1)
 {
   int value = param.asInt();
   digitalWrite(13, value);
 }
+```
+Blynk V1	GPIO 13	Light
+0	LOW	OFF
+1	HIGH	ON
 
-So:
-
-Blynk V1 ON
-     ↓
-GPIO 13 HIGH
-     ↓
-💡 Light ON
-🔔 Buzzer Control
-
+### Buzzer Control
 Blynk V2 controls GPIO 17:
-
+```cpp
 BLYNK_WRITE(V2)
 {
   int value = param.asInt();
   digitalWrite(17, value);
 }
+```
+Blynk V2	GPIO 17	Buzzer
+0	LOW	OFF
+1	HIGH	ON
 
-So:
+### Wi-Fi Status LED
+GPIO 2 is used as the Wi-Fi connection status indicator:
+```cpp
+pinMode(2, OUTPUT);
+```
+While connecting to Wi-Fi, the LED continuously turns ON and OFF. After a successful connection, it remains ON.
 
-Blynk V2 ON
-     ↓
-GPIO 17 HIGH
-     ↓
-🔔 Buzzer ON
----
+## Running the Project
+1. Connect the LM35 to the ESP32.
+2. Connect the Light/LED to GPIO 13.
+3. Connect the Buzzer to GPIO 17.
+4. Connect the ESP32 to your computer.
+5. Select ESP32 Dev Module in Arduino IDE.
+6. Select the correct COM port.
+7. Add your Wi-Fi and Blynk credentials.
+8. Upload the code.
+9. Open Serial Monitor at 9600 baud.
+10. Open the Blynk dashboard.
+11. Monitor temperature through V0.
+12. Control the light through V1.
+13. Control the buzzer through V2.
+14. Configure Blynk Events for temperature notifications.
 
-▶️ Running the Project
-Connect the LM35 to the ESP32.
-Connect the light/LED to GPIO 13.
-Connect the buzzer to GPIO 17.
-Connect the ESP32 to your computer.
-Select ESP32 Dev Module in Arduino IDE.
-Select the correct COM port.
-Enter your Wi-Fi and Blynk credentials.
-Upload the code.
-Open Serial Monitor at 9600 baud.
-Open the Blynk dashboard.
-Monitor the temperature using V0.
-Control the light using V1.
-Control the buzzer using V2.
-Configure Blynk Events if temperature notifications are required.
----
-
-📁 Project Structure
+## Project Structure
 ESPIOT_day2/
 │
 ├── ESPIOT_day2.ino
-└── README.md
----
+├── README.md
+└── .gitignore
 
-🚀 Future Improvements
-Add automatic temperature-based buzzer alerts
-Add automatic light control
-Add temperature history graphs
-Add more sensors
-Add better notification conditions
-Replace blocking delay() calls with BlynkTimer
-Store Wi-Fi and Blynk credentials securely
-🛠️ Technologies Used
-ESP32
-LM35
-Arduino IDE
-Blynk IoT
-Wi-Fi
----
+## Future Improvements
+1. Automatic temperature-based buzzer alerts
+2. Automatic light control based on temperature
+3. Temperature history and graphs
 
-📄 License
+## Additional sensors
+1. More advanced notification conditions
+2. Replace delay() with BlynkTimer
+3. Secure credential management
+
+## Technologies Used
+Technology	Purpose
+ESP32	Main microcontroller
+LM35	Temperature sensing
+Arduino IDE	Development environment
+Blynk IoT	Dashboard and remote control
+Wi-Fi	Wireless communication
+
+# License
 This project is created for educational and IoT experimentation purposes.
