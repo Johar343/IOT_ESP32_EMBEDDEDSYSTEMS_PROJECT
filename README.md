@@ -45,6 +45,7 @@ The LM35 has **3 pins**:
 | **VOUT** | **GPIO 36 (VP)** |
 
 > ⚠️ Check the orientation of your LM35 before connecting it. With the flat/front side facing you, the usual pin order is **VCC → VOUT → GND**. Check your specific LM35 module/datasheet if yours is packaged differently.
+---
 
 💡 Light / LED → ESP32
 Light/LED Connection	ESP32
@@ -59,6 +60,8 @@ Positive (+)	GPIO 17
 Negative (-)	GND
 
 The buzzer is controlled from Blynk using Virtual Pin V2.
+
+---
 
 🔴 ESP32 Status LED
 
@@ -81,8 +84,9 @@ LM35 Temperature	GPIO 36	INPUT
 Light / LED	GPIO 13	OUTPUT
 Buzzer	GPIO 17	OUTPUT
 Wi-Fi Status LED	GPIO 2	OUTPUT
-📱 Blynk Dashboard
+---
 
+📱 Blynk Dashboard
 The project uses Blynk IoT for remote monitoring and control.
 
 Virtual Pins
@@ -165,6 +169,8 @@ Blynk V0
 📱 Dashboard
   ↓
 📲 Alert if configured threshold is exceeded
+---
+
 📚 Libraries Used
 #include <WiFi.h>
 #include <BlynkSimpleEsp32.h>
@@ -173,8 +179,9 @@ Libraries
 WiFi.h → Connects ESP32 to Wi-Fi
 BlynkSimpleEsp32.h → Connects ESP32 with Blynk
 ESP_LM35.h → Reads temperature from the LM35 sensor
-⚙️ Blynk Configuration
+---
 
+⚙️ Blynk Configuration
 Create a Blynk template and configure:
 
 Template
@@ -189,6 +196,8 @@ V1 → Switch
 V2 → Switch
 
 For notifications, create a Blynk Event with the required temperature condition and enable push notifications.
+
+---
 
 💻 Arduino IDE Setup
 1. Install ESP32 Board Support
@@ -300,6 +309,8 @@ Blynk V2 ON
 GPIO 17 HIGH
      ↓
 🔔 Buzzer ON
+---
+
 ▶️ Running the Project
 Connect the LM35 to the ESP32.
 Connect the light/LED to GPIO 13.
@@ -315,12 +326,15 @@ Monitor the temperature using V0.
 Control the light using V1.
 Control the buzzer using V2.
 Configure Blynk Events if temperature notifications are required.
+---
+
 📁 Project Structure
 ESPIOT_day2/
 │
 ├── ESPIOT_day2.ino
-├── README.md
-└── .gitignore
+└── README.md
+---
+
 🚀 Future Improvements
 Add automatic temperature-based buzzer alerts
 Add automatic light control
@@ -335,6 +349,7 @@ LM35
 Arduino IDE
 Blynk IoT
 Wi-Fi
-📄 License
+---
 
+📄 License
 This project is created for educational and IoT experimentation purposes.
